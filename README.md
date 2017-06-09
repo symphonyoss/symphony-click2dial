@@ -4,3 +4,12 @@
 
 # symphony-click2dial
 Dial a number using your corporate telephony service from Symphony chat.
+
+## How to Contribute
+We are currently collaborating on requirements in the Wiki:
+
+https://symphonyoss.atlassian.net/wiki/display/PRJC2D/Project+Team+-+click2dial
+
+Comments and feedback are welcome!
+
+Also see [how to contribute code / issues](CONTRIBUTING.md).
