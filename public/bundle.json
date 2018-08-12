@@ -1,0 +1,17 @@
+{
+  "applications": [{
+    "type": "sandbox",
+    "id": "ethervox-symphony-extension",
+    "name": "EtherVox Symphony Extension",
+    "blurb": "EtherVox Symphony Extension",
+    "publisher": "EtherVox",
+    "url": "https://ethervox-symphony-bot.gltd.net/controller.html",
+    "domain": "ethervox-symphony-bot.gltd.net",
+    "permissions": [
+      "ACT_AS_USER",
+      "SEND_MESSAGES",
+      "GET_BASIC_CONTACT_INFO",
+      "GET_PRESENCE"
+    ]
+  }]
+}

@@ -1,0 +1,45 @@
+html {
+    overflow: hidden;
+}
+
+.tempo-btn {
+    font-family: SymphonyLato,Lato,"Segoe UI","Helvetica Neue",Verdana,Arial,sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    color: #fff;
+    background-color: #3da2fd;
+    text-transform: uppercase;
+    cursor: pointer;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border: 1px solid #3da2fd   ;
+    border-radius: 20px;
+    font-size: 12px;
+    text-align: center;
+    padding: 8px 32px;
+    margin: 2px 8px 8px 0;
+    outline: 0;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 12px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    overflow: hidden;
+    position: relative;
+    -webkit-transition: all 120ms ease-in-out;
+    transition: all 120ms ease-in-out;
+    z-index: 1;
+    text-transform: uppercase;
+}
+
+.tempo-btn:hover {
+    background-color: rgba(0,0,0,0);
+    color: #3da2fd;
+}
+
+.tempo-btn:active {
+    background-color: #3da2fd;
+    color: #FFF;
+}

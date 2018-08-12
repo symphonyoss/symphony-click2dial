@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>EtherVox</title>
+    <link rel="stylesheet" href="button-client.css">
+</head>
+<body>
+    <form>
+        
+        <input type="hidden" id="userEmail" value="{{userEmail}}"/>
+
+        {{#if requestid}}
+          <input type="hidden" id="requestid" value="{{requestid}}"/>
+        {{/if}}
+
+        {{#if members}}
+          <input type="hidden" id="members" value="{{members}}"/>
+        {{/if}}
+        
+        {{#if audience}}
+          <input type="hidden" id="audience" value="{{audience}}"/>
+        {{/if}}
+        
+        {{#if streamId}}
+          <input type="hidden" id="streamId" value="{{streamId}}"/>
+        {{/if}}
+
+        {{#if bridgechannelnum}}
+          <input type="hidden" id="bridgechannelnum" value="{{bridgechannelnum}}"/>
+        {{/if}}
+
+        {{{body}}}
+    </form>
+    <script src="button-client.js"></script>
+</body>
+</html>
