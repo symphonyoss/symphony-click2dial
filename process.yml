@@ -1,0 +1,5 @@
+apps:
+  - script   : ./index.js
+    name     : 'ether-vox-symphony-bot'
+    instances: 1
+    exec_mode: cluster

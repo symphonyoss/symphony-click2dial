@@ -1,0 +1,9 @@
+{
+    "symphonyUrls": {
+        "keyUrl": "https://foundation-dev-api.symphony.com/keyauth",
+        "sessionUrl": "https://foundation-dev-api.symphony.com/sessionauth",
+        "agentUrl": "https://foundation-dev.symphony.com/agent",
+        "podUrl": "https://foundation-dev.symphony.com/pod"
+    },
+    "bot": {}
+}
