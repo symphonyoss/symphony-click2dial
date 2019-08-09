@@ -2,6 +2,7 @@ const fs = require('fs');
 const atob = require('atob');
 const path = require('path');
 const http = require('http');
+const https = require('https');
 const compression = require('compression')
 const express = require('express');
 const EventEmitter = require('events');
@@ -9,20 +10,22 @@ const exphbs  = require('express-handlebars');
 const kebabCase = require('lodash/kebabCase');
 const difference = require('lodash/difference');
 const EtherVox = require('./ether-vox');
+const develop = process.env.DEVELOP;
 
 class ExtensionServer extends EventEmitter {
     constructor(symphony, responder) {
         super();
-        
+
         const port = process.env.ETHER_VOX_EXTENSION_SERVER_PORT;
+
         if (!port) {
-            throw 'ETHER_VOX_EXTENSION_SERVER_PORT is not set';
+          throw 'ETHER_VOX_EXTENSION_SERVER_PORT is not set';
         }
 
         this.etherVox = new EtherVox();
         this.symphony = symphony;
         this.responder = responder;
-        
+
         this.app = express();
         this.app.engine('handlebars', exphbs({
             defaultLayout: 'main',
@@ -36,6 +39,9 @@ class ExtensionServer extends EventEmitter {
         this.app.use(express.static(path.join(__dirname, '../public'), {
             maxAge: '1y',
             setHeaders: function setHeaders(res, path, stat) {
+                // res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+                // res.header('Expires', '-1');
+                // res.header('Pragma', 'no-cache');
                 res.header('Access-Control-Allow-Origin', '*');
                 res.header('Access-Control-Allow-Methods', 'GET');
                 res.header('Access-Control-Allow-Headers', 'Content-Type');
@@ -43,7 +49,23 @@ class ExtensionServer extends EventEmitter {
         }));
         this.app.use(express.json());
 
-        http.createServer(this.app).listen(port);
+        // This line is from the Node.js HTTP documentation.
+        const options = {
+            key: fs.readFileSync('certs/localhost.key'),
+            cert: fs.readFileSync('certs/localhost.cert'),
+            requestCert: false,
+            rejectUnauthorized: false,
+            headers: {
+                'Cache-Control': 'no-cache'
+            }
+        };
+
+        if (develop) {
+          https.createServer(options, this.app).listen(port);
+        }
+        else {
+          http.createServer(this.app).listen(port);
+        }
 
         this.app.get('/button', this.onGetButton.bind(this));
         this.app.post('/button', this.onPostButton.bind(this));

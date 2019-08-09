@@ -1,6 +1,7 @@
 const has = require('lodash/has');
 const Responder = require('./responder');
 const ExtensionServer = require('./extension-server');
+const Socket = require('./socket');
 
 class Bot {
     constructor(config) {
@@ -12,6 +13,7 @@ class Bot {
         this.responder = new Responder(symphony);
         this.extensionServer = new ExtensionServer(symphony, this.responder);
         this.listen();
+        new Socket(symphony, this.responder);
     }
     listen() {
         this.symphonyApi.feed.start().then(this.handleEvents.bind(this));

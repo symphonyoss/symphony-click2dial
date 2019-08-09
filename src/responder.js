@@ -10,7 +10,7 @@ class Responder extends EventEmitter {
         this.botUser = symphony.botUser;
         this.symphony = symphony;
         this.etherVox = new EtherVox();
-    }   
+    }
     handle(event) {
         const eventTypeHandlers = {
             'MESSAGESENT': this.onMessageSent,
@@ -27,7 +27,7 @@ class Responder extends EventEmitter {
                 .then(response => !response.body ? this.callToRegister(message.user.userId, message.stream.streamId) : true)
                 .then(isMember => isMember ? this.handleMemberMessage(message) : null);
         }
-    }   
+    }
     handleMemberMessage(message) {
         return message.stream.streamType === 'IM'
             ? this.handleIMMessage(message)
@@ -110,10 +110,15 @@ class Responder extends EventEmitter {
         };
         (messageToRepeat[intendedAction.value] || noop)(lastBotActionMessage.stream.streamId);
     }
+    sendCallSeparatorMessage(streamId) {
+      const response = new Message();
+      response.buildCallSeparatorMessage();
+      return this.respond(streamId, response.get(), response.data());
+    }
     onPutOnHandset(requestid, streamId, userId) {
         return this.validateCallState(streamId, requestid, 'established|accepted')
             .then(() => this.etherVox.putOnHandset(requestid, userId.toString())
-                .then(response => this.sendDropHandsetMessage(requestid, streamId, response.body.bridgechannelnum))
+                // .then(response => this.sendDropHandsetMessage(requestid, streamId, response.body.bridgechannelnum))
                 .catch(error => this.onEtherVoxError(streamId, error.response.text))
             )
             .catch(call => this.onCallValidationError(streamId, requestid, 'established|accepted', call.state));
@@ -126,7 +131,7 @@ class Responder extends EventEmitter {
     onDropHandset(requestid, bridgechannelnum, streamId, userId) {
         return this.validateCallState(streamId, requestid, 'established|accepted')
             .then(() => this.etherVox.dropHandset(requestid, userId.toString(), bridgechannelnum)
-                .then(() => this.sendPutOnHandsetMessage(requestid, streamId))
+                // .then(() => this.sendPutOnHandsetMessage(requestid, streamId))
                 .catch(error => this.onEtherVoxError(streamId, error.response.text))
             )
             .catch(call => this.onCallValidationError(streamId, requestid, 'established|accepted', call.state));
@@ -139,7 +144,7 @@ class Responder extends EventEmitter {
     onRequestCall(streamId, userId, farparty, members) {
         return this.etherVox
             .requestCall(userId.toString(), farparty.toString())
-            .then(response => this.sendPendingCallMessage(response.body.requestid, streamId, farparty, members))
+            // .then(response => this.sendPendingCallMessage(response.body.requestid, streamId, farparty, members))
             .catch(error => this.onEtherVoxError(streamId, error.response.text));
     }
     sendPendingCallMessage(requestid, streamId, farparty, members) {
@@ -150,7 +155,7 @@ class Responder extends EventEmitter {
     onAcceptCall(streamId, requestid, userId, farparty, members) {
         return this.validateCallState(streamId, requestid, 'request|pending')
             .then(() => this.etherVox.acceptCall(requestid, userId.toString())
-                .then(response => this.handleAcceptCall(streamId, requestid, userId, farparty, members))
+                // .then(response => this.handleAcceptCall(streamId, requestid, userId, farparty, members))
                 .catch(error => this.onEtherVoxError(streamId, error.response.text))
             )
             .catch(() => this.sendRequestCallMessage(streamId, members, `This bridge doesn't exist anymore`));
@@ -160,7 +165,7 @@ class Responder extends EventEmitter {
         this.sendDropCallMessage(requestid, caller, streamId, members);
         const IMToCreateUserIDs = members.map(memberId => [this.botUser.id, memberId]);
         const IMToCreatePromises = IMToCreateUserIDs.map(userIDs => this.symphony.createIM(userIDs));
-        
+
         return Promise.all(IMToCreatePromises).then(responses => {
             const streamIds = responses.map(response => response.id);
             streamIds.forEach(_streamId => {
@@ -188,16 +193,26 @@ class Responder extends EventEmitter {
     onCommonCallRejection(streamId, requestid, userId, farparty, members) {
         return this.etherVox
             .rejectCall(requestid, userId.toString())
-            .then(() => this.sendRequestCallMessage(streamId, members))
-            .catch(error => this.onEtherVoxError(streamId, error.response.text));        
+            // .then(() => this.sendRequestCallMessage(streamId, members))
+            .catch(error => this.onEtherVoxError(streamId, error.response.text));
     }
     sendRequestCallMessage(streamId, members, notification) {
         const responseMessage = new Message();
         responseMessage.buildRequestCallMessage(streamId, members);
         if (notification) {
-            responseMessage.addNotification(notification);
+          responseMessage.addNotification(notification);
         }
         return this.respond(streamId, responseMessage.get(), responseMessage.data());
+    }
+    sendRingDownMessage(requestid, streamId, farparty, members) {
+      const response = new Message();
+      response.buildRingDownMessage(requestid, streamId, farparty, members);
+      return this.respond(streamId, response.get(), response.data());
+    }
+    sendHandsetActivationMessage(requestid, streamId, farparty, members) {
+      const response = new Message();
+      response.buildHandsetActivationMessage(requestid, streamId, farparty, members);
+      return this.respond(streamId, response.get(), response.data());
     }
     containsResponse(message, response) {
         return message.message.indexOf(response) > -1;
@@ -216,7 +231,7 @@ class Responder extends EventEmitter {
     onUserJoinedRoom(event) {
         const userId = event.payload.userJoinedRoom.affectedUser.userId;
         const streamId  = event.payload.userJoinedRoom.stream.streamId;
-        return this.checkMember(userId, streamId);        
+        return this.checkMember(userId, streamId);
     }
     onInstantMessageCreated(event) {
         const userId = event.initiator.user.userId;
@@ -224,22 +239,28 @@ class Responder extends EventEmitter {
         return this.checkMember(userId, streamId);
     }
     onRoomCreated(event) {
-        const userId = event.initiator.user.userId;
-        const streamId  = event.payload.roomCreated.stream.streamId;
-        return this.checkMember(userId, streamId)
-            .then(isMember => isMember ? this.sendRequestCallMessage(streamId) : null);
+      if (event.initiator.user.userId !== this.botUser.id) {
+        const streamId = event.payload.roomCreated.stream.streamId;
+        this.symphony.getStreamMembers(streamId).then(members => {
+          const userIds = members
+            .filter(member => member.id !== this.botUser.id)
+            .map(member => member.id);
+          this.sendRequestCallMessage(streamId, userIds);
+        });
+      }
     }
     checkMember(userId, streamId) {
-        return this.etherVox.checkMember(userId)
-            .then(response => !response.body ? this.callToRegister(userId, streamId) : true);
+        return userId !== this.botUser.id
+          ? this.etherVox.checkMember(userId).then(response => !response.body ? this.callToRegister(userId, streamId) : true)
+          : Promise.resolve(true);
     }
     onUnknown(event) {
         this.emit('handleUnknown', event);
     }
-    onCallValidationError(streamId, requestid, expectedState, callState) {
+    onCallValidationError(streamId, requestid, expectedState, givenState) {
         const response = new Message();
         let error = `Call ${requestid} is not in ${expectedState} state`;
-        error += callState ? ` (${callState} instead)` : '';
+        error += givenState ? ` (${givenState} instead)` : '';
         return this.respond(streamId, response.buildGenericErrorMessage(error).get());
     }
     validateCallState(streamId, requestid, state) {

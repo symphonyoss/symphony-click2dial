@@ -1,5 +1,5 @@
 const superagent = require('superagent');
-const http  = require('superagent');
+
 class EtherVox {
     constructor() {
         this.apiPath = process.env.ETHER_VOX_API_PATH;
@@ -9,7 +9,7 @@ class EtherVox {
         this.token = process.env.ETHER_VOX_TOKEN;
         if (!this.token) {
             throw 'ETHER_VOX_TOKEN is not set';
-        }        
+        }
     }
     checkMember(identifier) {
         return this
@@ -42,8 +42,8 @@ class EtherVox {
     }
     putOnHandset(requestid, identifier) {
         return this
-            ._request('POST', 'community/handset/connect')
-            .send({ requestid, identifier, channel: 'symphony', force: true });
+             ._request('POST', 'community/handset/connect')
+             .send({ requestid, identifier, channel: 'symphony', force: true });
     }
     dropHandset(requestid, identifier, bridgechannelnum) {
         return this
