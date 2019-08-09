@@ -9,7 +9,7 @@
     "cors": "^2.8.4",
     "express": "^4.16.3",
     "express-handlebars": "^3.0.0",
-    "lodash": "^4.17.5",
+    "lodash": "^4.17.15",
     "socket.io-client": "2.1.1",
     "superagent": "^3.8.2",
     "symphony-api": "0.1.4",
