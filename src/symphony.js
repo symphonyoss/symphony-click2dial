@@ -28,6 +28,57 @@ class Symphony {
         };
         return this.api.stream.createIM.call(this.api.stream, userIDs);
     }
+    createRoom(name, requestid) {
+      this.api.stream.createRoom = function(_name, _requestid) {
+        const body = {
+          name: _name,
+          description: _requestid,
+          membersCanInvite: false,
+          discoverable: false,
+          public: false,
+          readOnly: false,
+          copyProtected: false,
+          crossPod: false,
+          viewHistory: true,
+          multiLateralRoom: false
+        };
+        return this.request(urljoin(this.podBaseUrl, '/v3/room/create'), 'POST', { body, json: true });
+      };
+      return this.api.stream.createRoom.call(this.api.stream, name, requestid);
+    }
+    addRoomMember(streamId, userId) {
+      this.api.stream.addRoomMember = function(_streamId, _userId) {
+        const body = {
+          id: _userId
+        };
+        return this.request(urljoin(this.podBaseUrl, `/v1/room/${streamId}/membership/add`), 'POST', { body, json: true });
+      };
+      return this.api.stream.addRoomMember.call(this.api.stream, streamId, userId);
+    }
+    removeRoomMember(streamId, userId) {
+      this.api.stream.removeRoomMember = function(_streamId, _userId) {
+        const body = {
+          id: _userId
+        };
+        return this.request(urljoin(this.podBaseUrl, `/v1/room/${streamId}/membership/remove`), 'POST', { body, json: true });
+      };
+      return this.api.stream.removeRoomMember.call(this.api.stream, streamId, userId);
+    }
+    deactivateRoom(streamId) {
+      this.api.stream.deactivateRoom = function(_streamId) {
+        return this.request(urljoin(this.podBaseUrl, `/v1/room/${_streamId}/setActive?active=false`), 'POST', { json: true });
+      };
+      return this.api.stream.deactivateRoom.call(this.api.stream, streamId);
+    }
+    searchRoom(query) {
+      this.api.stream.searchRoom = function(_query) {
+        const body = {
+          query: _query
+        };
+        return this.request(urljoin(this.podBaseUrl, `/v3/room/search`), 'POST', { body, json: true });
+      };
+      return this.api.stream.searchRoom.call(this.api.stream, query);
+    }
     getStreamMembers(streamId) {
         this.api.stream.getStreamMembers = function(_streamId) {
             return this.request(urljoin(this.podBaseUrl, `/v1/room/${_streamId}/membership/list`), 'GET');
@@ -41,6 +92,16 @@ class Symphony {
             return this.request(urljoin(this.agentBaseUrl, `/v1/message/search`), 'GET', { params })
         }
         return this.api.message.getBotMesssages.call(this.api.message, this.botUser.id, streamId);
+    }
+    searchUsers(uid) {
+      this.api.stream.searchUsers = function(_uid) {
+        const params = {
+          uid: _uid
+        };
+        console.log(params)
+        return this.request(urljoin(this.podBaseUrl, `/v3/users`), 'GET', { params });
+      };
+      return this.api.stream.searchUsers.call(this.api.stream, uid);
     }
 }
 

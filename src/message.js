@@ -13,16 +13,80 @@ class Message {
     buildConfirmedMemberMessage() {
         this.body = `
             <h3>Great! It looks like you are registered with etherVox.</h3>
-        `;  
+        `;
         return this;
     }
+
+    buildHandsetActivationMessage(requestid, streamId, farparty, members) {
+      const mentions = members ? members.map(memberId => `<mention uid="${memberId}"/>`).join(', ') : '';
+      this.body = `
+        ${mentions}<br/>
+        CallID: ${requestid}<br/>
+        <br/>
+        <mention uid="${farparty}"/> activated his Handset`;
+      this.structuredObject = {
+        availableActions: {
+          type: 'net.gltd.symphony',
+          version: '1.0',
+          id: [{
+              type: 'net.gltd.symphony.streamId',
+              value: streamId
+          }, {
+              type: 'net.gltd.symphony.audience',
+              value: farparty
+          }, {
+              type: 'net.gltd.symphony.members',
+              value: members
+          }, {
+              type: 'net.gltd.symphony.requestid',
+              value: requestid
+          }, {
+              type: 'net.gltd.symphony.action',
+              value: 'ringDown'
+          }]
+        }
+      };
+      return this;
+    }
+
+    buildRingDownMessage(requestid, streamId, farparty, members) {
+      const mentions = members ? members.map(memberId => `<mention uid="${memberId}"/>`).join(', ') : '';
+      this.body = `
+        ${mentions}<br/>
+        CallID: ${requestid}<br/>
+        <br/>
+        <mention uid="${farparty}"/> sent ringdown signal`;
+      this.structuredObject = {
+        availableActions: {
+          type: 'net.gltd.symphony',
+          version: '1.0',
+          id: [{
+              type: 'net.gltd.symphony.streamId',
+              value: streamId
+          }, {
+              type: 'net.gltd.symphony.audience',
+              value: farparty
+          }, {
+              type: 'net.gltd.symphony.members',
+              value: members
+          }, {
+              type: 'net.gltd.symphony.requestid',
+              value: requestid
+          }, {
+              type: 'net.gltd.symphony.action',
+              value: 'ringDown'
+          }]
+        }
+      };
+      return this;
+  }
+
     buildPendingCallMessage(requestid, streamId, farparty, members) {
         this.body = `
             <mention uid="${farparty}"/><br/>
             CallID: ${requestid}<br/>
             Available actions:<br/>
-            <div class="entity" data-entity-id="availableActions"> (etherVox Extension is not installed) </div>
-        `;
+            <div class="entity" data-entity-id="availableActions"> (etherVox Extension is not installed) </div>`;
         this.structuredObject = {
             availableActions: {
                 type: 'net.gltd.symphony',
@@ -47,6 +111,7 @@ class Message {
         };
         return this;
     }
+
     buildDropCallMessage(requestid, caller, streamId, members) {
         this.body = `
             <mention uid="${caller}"/><br/>
@@ -128,6 +193,17 @@ class Message {
             }
         };
         return this;
+    }
+    buildCallSeparatorMessage() {
+      this.body = `
+        <br/>
+        <br/>
+        *********************************************************** Bridge has been destroyed! ***********************************************************<br/>
+        <br/>
+        <br/>
+        <br/>`;
+
+      return this;
     }
     buildRequestCallMessage(streamId, members) {
         const mentions = members ? members.map(memberId => `<mention uid="${memberId}"/>`).join(', ') : '';
