@@ -4,7 +4,9 @@ Thanks for your interest in the project! Here is some basic information about ho
 # Contributor License Agreement (CLA)
 All contributions to [Symphony Software Foundation](https://symphony.foundation/) projects must be made under a [Contributor License Agreement](https://symphonyoss.atlassian.net/wiki/display/FM/Legal+Requirements#LegalRequirements-ContributorLicenseAgreement) that authorizes the Foundation to distribute your code under the Apache License. Contributions must also meet the Foundation's [license and notice requirements](https://symphonyoss.atlassian.net/wiki/display/FM/Legal+Requirements) that must also be met.
 
-Pull requests (PRs) submitted to the project cannot be accepted until you have a CLA in place with the Foundation.
+As a result, Pull requests (PRs) submitted to the project cannot be accepted until you have a CLA in place with the Foundation.
+
+Need an ICLA? Unsure if you are covered under an existing CCLA? Email [help@finos.org](mailto:help@finos.org?subject=CLA)
 
 # Contributing Issues
 
